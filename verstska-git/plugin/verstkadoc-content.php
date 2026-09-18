@@ -3,7 +3,7 @@
  * Plugin Name: VERSTKADOC Content
  * Plugin URI: https://verstkadoc.com/
  * Description: Content layer for the VERSTKADOC custom theme: homepage fields, Services, Cases and editable site settings.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Author: VERSTKADOC
  * License: GPL-2.0-or-later
  * Text Domain: verstkadoc-content
@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VD_CONTENT_VERSION', '0.1.0' );
+define( 'VD_CONTENT_VERSION', '0.2.0' );
 
 if ( ! function_exists( 'vd_is_russian' ) ) {
     function vd_is_russian() {
@@ -100,6 +100,108 @@ function vd_get_site_settings() {
 function vd_get_site_setting( $key, $default = '' ) {
     $settings = vd_get_site_settings();
     return isset( $settings[ $key ] ) && '' !== $settings[ $key ] ? $settings[ $key ] : $default;
+}
+
+
+function vd_register_home_meta() {
+    add_post_type_support( 'page', 'custom-fields' );
+
+    $string_keys = array(
+        'home_eyebrow',
+        'home_title',
+        'home_lead',
+        'home_cta',
+        'home_secondary',
+        'home_note',
+        'doc_kicker',
+        'doc_title',
+        'services_eyebrow',
+        'services_title',
+        'services_intro',
+        'process_eyebrow',
+        'process_title',
+        'process_intro',
+        'audience_eyebrow',
+        'audience_title',
+        'cases_eyebrow',
+        'cases_title',
+        'cases_all',
+        'quote_eyebrow',
+        'quote_title',
+        'quote_text',
+        'quote_cta',
+        'quote_box_title',
+        'quote_box_text',
+        'more',
+        'direct_clients_label',
+    );
+
+    foreach ( $string_keys as $key ) {
+        register_post_meta(
+            'page',
+            '_vd_home_' . $key,
+            array(
+                'single'            => true,
+                'type'              => 'string',
+                'show_in_rest'      => true,
+                'sanitize_callback' => 'sanitize_textarea_field',
+                'auth_callback'     => 'vd_can_edit_home_meta',
+            )
+        );
+    }
+
+    register_post_meta(
+        'page',
+        '_vd_home_steps',
+        array(
+            'single'            => true,
+            'type'              => 'array',
+            'show_in_rest'      => array(
+                'schema' => array(
+                    'type'  => 'array',
+                    'items' => array(
+                        'type'       => 'object',
+                        'properties' => array(
+                            'number'  => array( 'type' => 'string' ),
+                            'title'   => array( 'type' => 'string' ),
+                            'summary' => array( 'type' => 'string' ),
+                        ),
+                    ),
+                ),
+            ),
+            'auth_callback' => 'vd_can_edit_home_meta',
+        )
+    );
+
+    register_post_meta(
+        'page',
+        '_vd_home_audiences',
+        array(
+            'single'            => true,
+            'type'              => 'array',
+            'show_in_rest'      => array(
+                'schema' => array(
+                    'type'  => 'array',
+                    'items' => array(
+                        'type'       => 'object',
+                        'properties' => array(
+                            'eyebrow' => array( 'type' => 'string' ),
+                            'title'   => array( 'type' => 'string' ),
+                            'summary' => array( 'type' => 'string' ),
+                            'button'  => array( 'type' => 'string' ),
+                            'url'     => array( 'type' => 'string', 'format' => 'uri' ),
+                        ),
+                    ),
+                ),
+            ),
+            'auth_callback' => 'vd_can_edit_home_meta',
+        )
+    );
+}
+add_action( 'init', 'vd_register_home_meta', 20 );
+
+function vd_can_edit_home_meta( $allowed, $meta_key, $post_id, $user_id ) {
+    return current_user_can( 'edit_post', $post_id );
 }
 
 function vd_home_page_id() {
@@ -479,7 +581,10 @@ function vd_home_meta_box() {
         'vd_render_home_meta_box',
         'page',
         'normal',
-        'high'
+        'high',
+        array(
+            '__back_compat_meta_box' => true,
+        )
     );
 }
 add_action( 'add_meta_boxes_page', 'vd_home_meta_box' );
@@ -599,6 +704,33 @@ function vd_save_home_meta( $post_id ) {
     }
 }
 add_action( 'save_post_page', 'vd_save_home_meta' );
+
+
+function vd_enqueue_editor_sidebar() {
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+    if ( ! $screen || 'page' !== $screen->post_type ) {
+        return;
+    }
+
+    wp_enqueue_script(
+        'vd-content-editor-sidebar',
+        plugins_url( 'assets/js/editor-sidebar.js', __FILE__ ),
+        array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data' ),
+        VD_CONTENT_VERSION,
+        true
+    );
+
+    wp_add_inline_script(
+        'vd-content-editor-sidebar',
+        'window.VDContentEditor = ' . wp_json_encode(
+            array(
+                'homePageId' => vd_home_page_id(),
+            )
+        ) . ';',
+        'before'
+    );
+}
+add_action( 'enqueue_block_editor_assets', 'vd_enqueue_editor_sidebar' );
 
 function vd_admin_menu() {
     add_options_page(
