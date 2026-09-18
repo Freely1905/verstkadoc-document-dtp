@@ -1,0 +1,14 @@
+/*
+Theme Name: VERSTKADOC Document DTP
+Theme URI: https://verstkadoc.com/
+Author: VERSTKADOC
+Author URI: https://verstkadoc.com/
+Description: Custom lightweight classic WordPress theme for VERSTKADOC — document DTP and multilingual formatting.
+Version: 0.2.0
+Requires at least: 6.4
+Tested up to: 7.1
+Requires PHP: 8.0
+Text Domain: verstkadoc
+*/
+
+@import url('assets/css/theme.css');

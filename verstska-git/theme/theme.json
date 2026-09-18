@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.6/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "layout": {
+      "contentSize": "780px",
+      "wideSize": "1180px"
+    },
+    "color": {
+      "custom": true,
+      "palette": [
+        { "slug": "background", "color": "#f4f1eb", "name": "Paper background" },
+        { "slug": "paper", "color": "#fffdf9", "name": "Paper" },
+        { "slug": "foreground", "color": "#1d2730", "name": "Ink" },
+        { "slug": "muted", "color": "#687279", "name": "Muted" },
+        { "slug": "blue", "color": "#31586e", "name": "Blue" },
+        { "slug": "accent", "color": "#bb5c3b", "name": "Terracotta" }
+      ]
+    },
+    "spacing": {
+      "units": ["px", "em", "rem", "%", "vw", "vh"]
+    },
+    "typography": {
+      "dropCap": false,
+      "fluid": true
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var:preset|color|background",
+      "text": "var:preset|color|foreground"
+    },
+    "typography": {
+      "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+      "lineHeight": "1.65"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontFamily": "Georgia, \"Times New Roman\", serif"
+        }
+      },
+      "link": {
+        "typography": {
+          "textDecoration": "none"
+        }
+      }
+    }
+  }
+}
