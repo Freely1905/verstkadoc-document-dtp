@@ -3,7 +3,7 @@
  * Plugin Name: VERSTKADOC Content
  * Plugin URI: https://verstkadoc.com/
  * Description: Content layer for the VERSTKADOC custom theme: homepage fields, Services, Cases and editable site settings.
- * Version: 0.2.0
+ * Version: 0.2.1
  * Author: VERSTKADOC
  * License: GPL-2.0-or-later
  * Text Domain: verstkadoc-content
@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VD_CONTENT_VERSION', '0.2.0' );
+define( 'VD_CONTENT_VERSION', '0.2.1' );
 
 if ( ! function_exists( 'vd_is_russian' ) ) {
     function vd_is_russian() {
@@ -715,7 +715,7 @@ function vd_enqueue_editor_sidebar() {
     wp_enqueue_script(
         'vd-content-editor-sidebar',
         plugins_url( 'assets/js/editor-sidebar.js', __FILE__ ),
-        array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data' ),
+        array( 'wp-plugins', 'wp-editor', 'wp-element', 'wp-components', 'wp-data' ),
         VD_CONTENT_VERSION,
         true
     );
